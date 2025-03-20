@@ -1,0 +1,11 @@
+name = "DGMultMeshMWE"
+uuid = "370c3c54-5aec-46e2-a324-80438cb79332"
+authors = ["James Cook <cookjws@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+OrdinaryDiffEqLowStorageRK = "b0944070-b475-4768-8dec-fb6eb410534d"
+OrdinaryDiffEqSSPRK = "669c94d9-1f4b-4b64-b377-1aa079aa2388"
+StartUpDG = "472ebc20-7c99-4d4b-9470-8fde4e9faa0f"
+Triangulate = "f7e6ffb2-c36d-4f8f-a77e-16e897189344"
+Trixi = "a7f1ee26-1774-49b1-8366-f1abc58fbfcb"
