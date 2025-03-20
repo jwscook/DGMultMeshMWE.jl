@@ -94,14 +94,17 @@ function mymesh(;polydeg=3, maxarea=0.1)
   UX = 5.0
   LY = 0.0
   UY = 5.0
-  T0 = 0.0
-  T1 = 1.0
+#  T0 = 0.0
+#  T1 = 1.0
   
   function mytriangulation(maxarea=0.1)
     triin = Triangulate.TriangulateIO()
-    triin.pointlist = Matrix{Cdouble}([LX LY; T0 LY; T0 T1; T1 T1; T1 LY; UX LY; UX UY; LX UY]')
-    triin.segmentlist = Matrix{Cint}([1 2; 2 3; 3 4; 4 5; 5 6; 6 7; 7 8; 8 1]')
-    triin.segmentmarkerlist = Vector{Int32}([1, 2, 3, 4, 5, 6, 7, 8])
+    triin.pointlist = Matrix{Cdouble}([LX LY; UX LY; UX UY; LX UY]')
+    triin.segmentlist = Matrix{Cint}([1 2; 2 3; 3 4; 4 1]')
+    triin.segmentmarkerlist = Vector{Int32}([1, 2, 3, 4])
+    #triin.pointlist = Matrix{Cdouble}([LX LY; T0 LY; T0 T1; T1 T1; T1 LY; UX LY; UX UY; LX UY]')
+    #triin.segmentlist = Matrix{Cint}([1 2; 2 3; 3 4; 4 5; 5 6; 6 7; 7 8; 8 1]')
+    #triin.segmentmarkerlist = Vector{Int32}([1, 2, 3, 4, 5, 6, 7, 8])
     (triout, vorout) = triangulate("pa$(maxarea)DQ", triin)
     return (triout, vorout, maxarea)
   end
@@ -123,15 +126,16 @@ function mymesh(;polydeg=3, maxarea=0.1)
   function lowerboundary(xy)
     atol = 1e-8 * UY
     x, y = xy
-    if isapprox(y, LY, atol=atol) && ((x <= T0) || (x >= T1)) # sides of hat
-      return true
-    elseif isapprox(y, T1, atol=atol) && (T0 <= x <= T1) # top of hat
-      return true
-    elseif isapprox(x, T0, atol=atol) && (T0 <= y <= T1) # left of hat
-      return true
-    elseif isapprox(x, T1, atol=atol) && (T0 <= y <= T1) # right of hat
-      return true
-    end
+    isapprox(y, LY, atol=atol) && return true
+#    if isapprox(y, LY, atol=atol) && ((x <= T0) || (x >= T1)) # sides of hat
+#      return true
+#    elseif isapprox(y, T1, atol=atol) && (T0 <= x <= T1) # top of hat
+#      return true
+#    elseif isapprox(x, T0, atol=atol) && (T0 <= y <= T1) # left of hat
+#      return true
+#    elseif isapprox(x, T1, atol=atol) && (T0 <= y <= T1) # right of hat
+#      return true
+#    end
     return false
   end
   
