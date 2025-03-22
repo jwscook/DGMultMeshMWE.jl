@@ -137,14 +137,16 @@ function mymesh(;polydeg=3, maxarea=0.1)
   
   boundary_identifiers = Dict(:left => leftboundary, :lower => lowerboundary,
                               :right => rightboundary, :upper => upperboundary)
-  shock_indicator = IndicatorHennemannGassner(equations, basis,
-                                            alpha_max = 0.5,
-                                            alpha_min = 0.001,
-                                            alpha_smooth = true,
-                                            variable = density_pressure)
-  volume_integral = VolumeIntegralShockCapturingHG(shock_indicator;
-                                                   volume_flux_dg = volume_flux,
-                                                   volume_flux_fv = surface_flux)
+#  shock_indicator = IndicatorHennemannGassner(equations, basis,
+#                                            alpha_max = 0.5,
+#                                            alpha_min = 0.001,
+#                                            alpha_smooth = true,
+#                                            variable = density_pressure)
+#  volume_integral = VolumeIntegralShockCapturingHG(shock_indicator;
+#                                                   volume_flux_dg = volume_flux,
+#                                                   volume_flux_fv = surface_flux)
+  surface_flux = flux_lax_friedrichs
+  volume_integral = VolumeIntegralFluxDifferencing(flux_ranocha)
   solver = DGSEM(polydeg = polydeg, surface_flux = surface_flux,
                  volume_integral = volume_integral)
 
@@ -160,21 +162,7 @@ function mymesh(;polydeg=3, maxarea=0.1)
   return (mesh, dg)
 end
 
-
-volume_flux = flux_ranocha
-surface_flux = flux_lax_friedrichs
-
 polydeg = 4
-basis = LobattoLegendreBasis(polydeg)
-shock_indicator = IndicatorHennemannGassner(equations, basis,
-                                            alpha_max = 0.5,
-                                            alpha_min = 0.001,
-                                            alpha_smooth = true,
-                                            variable = density_pressure)
-volume_integral = VolumeIntegralShockCapturingHG(shock_indicator;
-                                                 volume_flux_dg = volume_flux,
-                                                 volume_flux_fv = surface_flux)
-
 mesh, dg = mymesh(;polydeg=polydeg, maxarea=0.1)
 solver = dg
 
