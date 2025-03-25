@@ -123,28 +123,21 @@ function mymesh(;polydeg=3, maxarea=0.1)
   function lowerboundary(xy)
     atol = 1e-8 * UY
     x, y = xy
-    if isapprox(y, LY, atol=atol) && ((x <= T0) || (x >= T1)) # sides of hat
+    if isapprox(y, LY, atol=atol) && ((x <= T0 + atol) || (x >= T1 - atol)) # sides of hat
       return true
-    elseif isapprox(y, T1, atol=atol) && (T0 <= x <= T1) # top of hat
+    elseif isapprox(y, T1, atol=atol) && (T0 - atol <= x <= T1 + atol) # top of hat
       return true
-    elseif isapprox(x, T0, atol=atol) && (T0 <= y <= T1) # left of hat
+    elseif isapprox(x, T0, atol=atol) && (T0 - atol <= y <= T1 + atol) # left of hat
       return true
-    elseif isapprox(x, T1, atol=atol) && (T0 <= y <= T1) # right of hat
+    elseif isapprox(x, T1, atol=atol) && (T0 - atol <= y <= T1 + atol) # right of hat
       return true
     end
     return false
   end
   
-  boundary_identifiers = Dict(:left => leftboundary, :lower => lowerboundary,
-                              :right => rightboundary, :upper => upperboundary)
-#  shock_indicator = IndicatorHennemannGassner(equations, basis,
-#                                            alpha_max = 0.5,
-#                                            alpha_min = 0.001,
-#                                            alpha_smooth = true,
-#                                            variable = density_pressure)
-#  volume_integral = VolumeIntegralShockCapturingHG(shock_indicator;
-#                                                   volume_flux_dg = volume_flux,
-#                                                   volume_flux_fv = surface_flux)
+  is_on_boundary = Dict(:left => leftboundary, :lower => lowerboundary,
+                        :right => rightboundary, :upper => upperboundary)
+
   surface_flux = flux_lax_friedrichs
   volume_integral = VolumeIntegralFluxDifferencing(flux_ranocha)
   solver = DGSEM(polydeg = polydeg, surface_flux = surface_flux,
@@ -157,7 +150,7 @@ function mymesh(;polydeg=3, maxarea=0.1)
                      surface_integral=surface_integral,
                      volume_integral=volume_integral) # Tri is from NodesAndModes.jl
 
-  mesh = DGMultiMesh(dg, vertices, EToV; is_on_boundary=boundary_identifiers)
+  mesh = DGMultiMesh(dg, vertices, EToV; periodicity=(false, false), is_on_boundary=is_on_boundary)
   
   return (mesh, dg)
 end
